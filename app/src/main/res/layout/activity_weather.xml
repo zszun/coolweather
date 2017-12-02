@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorPrimary"
+    >
+
+    <!--必应每日一背景图-->
+    <!--由于FrameLayout默认时控件都在左上角，因此ScrollView会完全覆盖住ImageView-->
+    <ImageView
+        android:id="@+id/bing_pic_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    <!--将天气界面上每个部分的布局文件引入-->
+    <!--ScrollView的内部只允许存在一个直接子布局，因此嵌套一个LinearLayout，然后在LinearLayout中
+    将刚才定义的所有布局逐个引入-->
+    <!--android:fitsSystemWindows="true"为状态栏留出空间-->
+    <ScrollView
+        android:id="@+id/weather_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        android:scrollbars="none"
+        android:fitsSystemWindows="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                layout="@layout/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <include layout="@layout/now" />
+
+            <include layout="@layout/forecast" />
+
+            <include layout="@layout/aqi" />
+
+            <include layout="@layout/suggestion" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</FrameLayout>
