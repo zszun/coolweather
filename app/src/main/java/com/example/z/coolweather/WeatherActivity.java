@@ -1,5 +1,6 @@
 package com.example.z.coolweather;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Build;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.example.z.coolweather.gson.Forecast;
 import com.example.z.coolweather.gson.Weather;
+import com.example.z.coolweather.service.AutoUpdateService;
 import com.example.z.coolweather.util.HttpUtil;
 import com.example.z.coolweather.util.Utility;
 
@@ -53,6 +55,8 @@ public class WeatherActivity extends AppCompatActivity {
     private TextView carWashText;
 
     private TextView sportText;
+
+    public String weatherId;
 
     private ImageView bingPicImg;
 
@@ -97,7 +101,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather",null);
-        final String weatherId;
+        //final String weatherId;
 
         if (weatherString != null){
 
@@ -140,7 +144,7 @@ public class WeatherActivity extends AppCompatActivity {
      * 加载必应每日一图
      */
     private void loadBingPic() {
-        String requestBingPic = "http://guolin.tech/api/bing_pic";  //返回必应背景图链接
+        final String requestBingPic = "http://cn.bing.com/HPImageArchive.aspx?format=js&idx=0&n=1"; //返回带有必应图json数组
         HttpUtil.sendOkHttpRequest(requestBingPic, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -149,7 +153,9 @@ public class WeatherActivity extends AppCompatActivity {
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
-                final String bingPic = response.body().string();  //获取到图片链接
+
+
+                final String bingPic = Utility.handleBingPic(response.body().string());  //获取到图片链接
                 SharedPreferences.Editor editor = PreferenceManager
                         .getDefaultSharedPreferences(WeatherActivity.this).edit();
                 editor.putString("bing_pic",bingPic);  //将图片链接缓存到SP当中
@@ -170,7 +176,9 @@ public class WeatherActivity extends AppCompatActivity {
      * 根据ID请求天气信息
      * @param weatherId
      */
-    public void requestWeather(final String weatherId) {
+    public void requestWeather(String weatherId) {
+
+        this.weatherId = weatherId;
 
         String weatherUrl = "http://guolin.tech/api/weather?cityid=" +
                 weatherId + "&key=09b98a795c1d47bbad4ec97f3fbeb004";
@@ -195,6 +203,9 @@ public class WeatherActivity extends AppCompatActivity {
                             editor.putString("weather",responseText);
                             editor.apply();  //向SP中缓存（存储）数据
                             showWeatherInfo(weather);  //从SP中读取数据并展示出来
+                            Intent intent = new Intent(WeatherActivity.this,
+                                    AutoUpdateService.class); //启动服务
+                            startService(intent);
                         } else {
                             Toast.makeText(WeatherActivity.this, "获取天气信息失败",
                                     Toast.LENGTH_SHORT).show();

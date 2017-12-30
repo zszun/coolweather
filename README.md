@@ -1,1 +1,3 @@
 # coolweather
+这是我学习Android的简单小作品
+使用和风天气提供的天气接口

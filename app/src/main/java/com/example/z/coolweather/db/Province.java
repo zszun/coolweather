@@ -4,7 +4,8 @@ import org.litepal.crud.DataSupport;
 
 /**
  * Created by z少尊 on 2017/11/5.
- *
+ *存放省的天气信息
+ * 使用LitePal处理
  */
 
 public class Province extends DataSupport{

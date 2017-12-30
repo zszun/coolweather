@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 /**
  * Created by z少尊 on 2017/11/8.
+ * 工具类
  * 此工具类用来解析和处理服务器返回的省市县的JSON数据
  * 这里JSON的数据结构比较简单，就不使用GSON来进行解析了
  */
@@ -33,7 +34,7 @@ public class Utility {
                     Province province = new Province();
                     province.setProvinceName(provinceObject.getString("name"));
                     province.setProvinceCode(provinceObject.getInt("id"));
-                    province.save();
+                    province.save();  //储存到数据库
                 }
                 return true;
             }catch (JSONException e){
@@ -57,7 +58,7 @@ public class Utility {
                     city.setCityName(cityObject.getString("name"));
                     city.setCityCode(cityObject.getInt("id"));
                     city.setProvinceID(provindeId);
-                    city.save();
+                    city.save();   //储存到数据库
                 }
                 return true;
             }catch (JSONException e){
@@ -80,7 +81,7 @@ public class Utility {
                     county.setCountyName(countyObject.getString("name"));
                     county.setWeatherID(countyObject.getString("weather_id"));
                     county.setCityID(cityId);
-                    county.save();
+                    county.save();  //储存到数据库
                 }
                 return true;
             }catch (JSONException e){
@@ -102,13 +103,37 @@ public class Utility {
             JSONArray jsonArray = jsonObject.getJSONArray("HeWeather");
 
             String weatherContent = jsonArray.getJSONObject(0).toString();
-            return new Gson().fromJson(weatherContent,Weather.class);
+            return new Gson().fromJson(weatherContent,Weather.class);  //这里用GSON解析
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
         return null;
+    }
+
+    /**
+     * 解析和处理必应返回的数据
+     * @param response
+     * @return
+     */
+    public static String handleBingPic(String response){
+
+        try {
+            JSONObject object = new JSONObject(response);
+            JSONArray jsonArray = object.getJSONArray("images");
+            JSONObject jsonObject = jsonArray.getJSONObject(0);  //数组的第一组数据有链接
+            String bingPic = jsonObject.getString("url"); //获取后缀地址
+            String bingUrl = "http://s.cn.bing.net" + bingPic;
+
+            return bingUrl;  //返回必应图片链接
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+
     }
 
 
